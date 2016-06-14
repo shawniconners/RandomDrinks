@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+ -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+		<link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Random Drinks</title>
+		<script>
+			
+			// The watch id references the current `watchAcceleration`
+			var watchID = null;
+			var previousAcceleration = { x: null, y: null, z: null };
+			var strDevice = "";
+			var strDeviceName = "";
+			var strDeviceAccel = 0;
+			
+			
+			var arrDrinks = [
+							 {
+							 category: "Beer",
+							 active: 1,
+							 drinks: [
+									  {	name: "Pale Ale",				ingredients: "Beer"	},
+									  {	name: "Stout",					ingredients: "Beer"	},
+									  {	name: "Porter",					ingredients: "Beer"	},
+									  {	name: "Light Beer",				ingredients: "Beer"	},
+									  {	name: "Lager",					ingredients: "Beer"	},
+									  {	name: "Amber",					ingredients: "Beer"	},
+									  {	name: "IPA",					ingredients: "Beer"	},
+									  {	name: "Black & Tan",			ingredients: "Beer"	},
+									  {	name: "Pilsner",				ingredients: "Beer"	},
+									  {	name: "Hard Cider",				ingredients: "Hard Cider"	}
+									  ]
+							 },
+							 {
+							 category: "Bourbon",
+							 active: 1,
+							 drinks: [
+									  {	name: "Jack & Coke",			ingredients: "Bourbon, Cola"	},
+									  {	name: "Lynchburg Lemonade",		ingredients: "Bourbon, Triple Sec, Sweet & Sour"	},
+									  {	name: "Mint Julep",				ingredients: "Bourbon, Mint, Sugar"	},
+									  {	name: "Rebel Yell",				ingredients: "Bourbon, Triple Sec, Lemon Juice, Egg White"	},
+									  {	name: "Peach Smash",			ingredients: "Bourbon, Peach, Ginger, Mint, Simple Syrup, Ginger Ale"	}
+									  ]
+							 },
+							 {
+							 category: "Drop Shot",
+							 active: 1,
+							 drinks: [
+									  {	name: "Car Bomb",				ingredients: "Stout, Irish Cream, Whiskey"	},
+									  {	name: "Boilermaker",			ingredients: "Beer, Whiskey"	},
+									  {	name: "Tic Tac",				ingredients: "Orange Vodka, Red Bull, Orange Juice"	},
+									  {	name: "RBV",					ingredients: "Red Bull, Vodka"	},
+									  {	name: "Flaming Dr. Pepper",		ingredients: "Amaretto, Beer"	},
+									  {	name: "Sake Bomb",				ingredients: "Beer, Sake"	},
+									  {	name: "Jager Bomb",				ingredients: "Jagermeister, Red Bull"	}
+									  ]
+							 },
+							 {
+							 category: "Gin",
+							 active: 1,
+							 drinks: [
+									  {	name: "Gin & Tonic",			ingredients: "Gin, Tonic, Lime"	},
+									  {	name: "Gimlet",					ingredients: "Gin, Lime Juice"	},
+									  {	name: "Lime Rickey",			ingredients: "Gin, Lime Juice, Mineral Water"	},
+									  {	name: "Long Island Iced Tea",	ingredients: "Vodka, Tequila, Rum, Gin"	},
+									  {	name: "Gin Martini",			ingredients: "Gin, Vermouth, Olive"	},
+									  {	name: "Dirty Martini",			ingredients: "Gin, Dry Vermouth, Olive Juice, Olives"	},
+									  {	name: "Negroni",				ingredients: "Gin, Vermouth, Campari"	},
+									  {	name: "Sloe Gin Fizz",			ingredients: "Sloe Gin, Lemon Juice, Lime Juice, Simple Syrup, Cream, Egg White, Soda Water"	},
+									  {	name: "Singapore Sling",		ingredients: "Gin, Cherry Brandy, Cointreau, Grenadine, Pineapple Juice, Lemon Juice, Bitters"	},
+									  {	name: "Tom Collins",			ingredients: "Gin, Lemon Juice, Sugar, Soda Water"	},
+									  {	name: "Velvet Crush",			ingredients: "Gin, Kool-Aid"	}
+									  ]
+							 },
+							 {
+							 category: "Liqueur",
+							 active: 1,
+							 drinks: [
+									  {	name: "Amaretto Stone Sour",	ingredients: "Amaretto, Sweet & Sour, Orange Juice"	},
+									  {	name: "Fuzzy Navel",			ingredients: "Peach Schnapps, Orange Juice"	},
+									  {	name: "Midori Sour",			ingredients: "Midori, Sweet & Sour"	},
+									  {	name: "Sambuca",				ingredients: "Sambuca"	},
+									  {	name: "Absinthe & Root Beer",	ingredients: "Absinthe, Root Beer"	},
+									  {	name: "Brandy Alexander",		ingredients: "Brandy, Creme de Cacao, Cream"	},
+									  {	name: "Appletini",				ingredients: "Vodka, Apple Schnapps, Cointreau"	},
+									  {	name: "B-52",					ingredients: "Coffee Liqueur, Irish Cream, Orange Liqueur"	},
+									  {	name: "Stinger",				ingredients: "Brandy, Creme de Menthe"	},
+									  {	name: "BFK",					ingredients: "Irish Cream, Frangelico, Coffee Liqueur"	},
+									  {	name: "Grasshopper",			ingredients: "Green Creme de Menthe, Creme de Cacao, Cream"	},
+									  {	name: "Toasted Almond",			ingredients: "Amaretto, Coffee Liqueur, Cream"	},
+									  {	name: "Bahama Mama",			ingredients: "Coffee Liqueur, Rum, Coconut Liqueur, 151 Rum, Pineapple Juice, Cherry"	},
+									  {	name: "Comfortable Dew",		ingredients: "Southern Comfort, Mountain Dew"	}
+									  ]
+							 },
+							 {
+							 category: "Red Wine",
+							 active: 1,
+							 drinks: [
+									  {	name: "Pinot Noir",				ingredients: "Wine"	},
+									  {	name: "Merlot",					ingredients: "Wine"	},
+									  {	name: "Chianti",				ingredients: "Wine"	},
+									  {	name: "Cabernet Sauvignon",		ingredients: "Wine"	},
+									  {	name: "Syrah",					ingredients: "Wine"	},
+									  {	name: "Petit Sirah",			ingredients: "Wine"	}
+									  ]
+							 },
+							 {
+							 category: "Rum",
+							 active: 1,
+							 drinks: [
+									  {	name: "Rum & Coke",				ingredients: "Rum, Cola"	},
+									  {	name: "Blue Hawaii",			ingredients: "Rum, Vodka, Curacao, Pineapple Juice, Sweet & Sour"	},
+									  {	name: "Cuba Libre",				ingredients: "White Rum, Cola"	},
+									  {	name: "Dark & Stormy",			ingredients: "Rum, Ginger Beer, Lime"	},
+									  {	name: "Daiquiri",				ingredients: "Rum, Lime, Simple Syrup"	},
+									  {	name: "Hurricane",				ingredients: "Light Rum, Dark Rum, Fruit Juice, Lime Juice"	},
+									  {	name: "Long Island Iced Tea",	ingredients: "Vodka, Tequila, Rum, Gin"	},
+									  {	name: "Mojito",					ingredients: "Rum, Lime Juice, Mint, Soda Water, Sugar"	},
+									  {	name: "Pina Colada",			ingredients: "Rum, Coconut Juice, Pineapple Juice"	},
+									  {	name: "Zombie",					ingredients: "Light Rum, Dark Rum, Pineapple Juice, 151 Rum, Lime Juice"	},
+									  {	name: "Hot Buttered Rum",		ingredients: "Rum, Hot Water, Butter, Sugar, Cinnamon"	}
+									  ]
+							 },
+							 {
+							 category: "Scotch",
+							 active: 1,
+							 drinks: [
+									  {	name: "Rusty Nail",				ingredients: "Scotch, Drambuie"	},
+									  {	name: "Blood and Sand",			ingredients: "Scotch, Orange Juice, Vermouth, Cherry"	},
+									  {	name: "Mamie Taylor",			ingredients: "Scotch, Lime Juice, Ginger Beer"	},
+									  {	name: "The Godfather",			ingredients: "Scotch, Amaretto"	},
+									  {	name: "Scotch Cocktail",		ingredients: "Scotch, Sugar, Bitters"	}
+									  ]
+							 },
+							 {
+							 category: "Shooter",
+							 active: 1,
+							 drinks: [
+									  {	name: "Purple Hooter",			ingredients: "Vodka, Chambord"	},
+									  {	name: "Alabama Slammer",		ingredients: "Sloe Gin, Amaretto, Southern Comfort"	},
+									  {	name: "Third Reich",			ingredients: "Jagermeister, Goldschlager, Rumpleminze"	},
+									  {	name: "Mind Eraser",			ingredients: "Coffee Liqueur, Vodka, Soda"	},
+									  {	name: "Oatmeal Cookie",			ingredients: "Butterscotch Schnapps, Jagermeister, Irish Cream, Cinnamon Schnapps"	},
+									  {	name: "PB & J",					ingredients: "Frangelico, Chambord"	},
+									  {	name: "Peppermint Patty",		ingredients: "Creme de Cacao, Peppermint Schnapps, Cream"	},
+									  {	name: "Prairie Fire",			ingredients: "Tequila, Tabasco Sauce"	},
+									  {	name: "Snakebite",				ingredients: "Bourbon, Lime Juice"	}
+									  ]
+							 },
+							 {
+							 category: "Tequila",
+							 active: 1,
+							 drinks: [
+									  {	name: "Margarita",				ingredients: "Tequila, Lime Juice, Triple Sec, Salt"	},
+									  {	name: "Long Island Iced Tea",	ingredients: "Vodka, Tequila, Rum, Gin"	},
+									  {	name: "Tequila Sour",			ingredients: "Tequila, Sweet & Sour"	},
+									  {	name: "Tequila Sunrise",		ingredients: "Tequila, Orange Juice, Grenadine"	},
+									  {	name: "Spanish Coffee",			ingredients: "Tequila, Coffee, Cream, Sugar"	}
+									  ]
+							 },
+							 {
+							 category: "Vodka",
+							 active: 1,
+							 drinks: [
+									  {	name: "Screwdriver",			ingredients: "Vodka, Orange Juice"	},
+									  {	name: "Vodka Tonic",			ingredients: "Vodka, Tonic, Lime"	},
+									  {	name: "Vodka Soda",				ingredients: "Vodka, Soda Water, Lime/Lemon"	},
+									  {	name: "Cape Cod",				ingredients: "Vodka, Cranberry Juice"	},
+									  {	name: "Black Russian",			ingredients: "Vodka, Coffee Liqueur"	},
+									  {	name: "White Russian",			ingredients: "Vodka, Coffee Liqueur, Cream"	},
+									  {	name: "Colorado Bulldog",		ingredients: "Vodka, Coffee Liqueur, Cream, Cola"	},
+									  {	name: "Bloody Mary",			ingredients: "Vodka, Tomato Juice, Hot Sauce, Vegetable Garnish"	},
+									  {	name: "Greyhound",				ingredients: "Vodka, Grapefruit Juice"	},
+									  {	name: "Cosmopolitan",			ingredients: "Vodka, Cointreau, Cranberry Juice, Lime Juice"	},
+									  {	name: "Harvey Wallbanger",		ingredients: "Vodka, Galliano, Orange Juice"	},
+									  {	name: "Kamikaze",				ingredients: "Vodka, Triple Sec, Lime Juice"	},
+									  {	name: "Lime Rickey",			ingredients: "Vodka, Lime Juice, Mineral Water"	},
+									  {	name: "Long Island Iced Tea",	ingredients: "Vodka, Tequila, Rum, Gin"	},
+									  {	name: "Mudslide",				ingredients: "Vodka, Coffee Liqueur, Irish Cream, Cream"	},
+									  {	name: "Vodka Gimlet",			ingredients: "Vodka, Lime Juice"	},
+									  {	name: "Vodka Martini",			ingredients: "Vodka, Vermouth, Olive"	},
+									  {	name: "Lemon Drop",				ingredients: "Vodka, Lemon Juice, Simple Syrup"	},
+									  {	name: "Chocolate Martini",		ingredients: "Vodka, Chocolate Liqueur, Creme de Cacao"	}
+									  ]
+							 },
+							 {
+							 category: "Whiskey",
+							 active: 1,
+							 drinks: [
+									  {	name: "Irish Coffee",			ingredients: "Whiskey, Coffee, Cream, Sugar"	},
+									  {	name: "Manhattan",				ingredients: "Whiskey, Vermouth, Bitters, Cherry"	},
+									  {	name: "Old Fashioned",			ingredients: "Whiskey, Bitters"	},
+									  {	name: "Sazerac",				ingredients: "Whiskey, Simple Syrup, Bitters, Absinthe"	},
+									  {	name: "Seven & Seven",			ingredients: "Whiskey, Citrus Soda"	},
+									  {	name: "Whiskey Sour",			ingredients: "Whiskey, Sweet & Sour"	},
+									  {	name: "Irish Flag",				ingredients: "Green Creme de Menthe, Whiskey, Irish Cream"	},
+									  {	name: "Hot Toddy",				ingredients: "Whiskey, Lemon Juice, Honey, Hot Water"	}
+									  ]
+							 },
+							 {
+							 category: "White Wine",
+							 active: 1,
+							 drinks: [
+									  {	name: "Champagne",				ingredients: "Wine"	},
+									  {	name: "Pinot Gris",				ingredients: "Wine"	},
+									  {	name: "Chardonnay",				ingredients: "Wine"	},
+									  {	name: "Riesling",				ingredients: "Wine"	},
+									  {	name: "Sauvignon Blanc",		ingredients: "Wine"	},
+									  {	name: "Mimosa",					ingredients: "Champagne, Orange Juice"	}
+									  ]
+							 }
+							 
+			];
+
+			function funRandomDrink(){
+				//create an array to store our list of active drinks
+				var arrActiveDrinks = [];
+				//push active drinks to our array
+				for (var i=0;i<arrDrinks.length;i++){
+					if(arrDrinks[i].active == 1){
+						for (var x=0;x<arrDrinks[i].drinks.length;x++){
+							arrActiveDrinks.push({name: arrDrinks[i].drinks[x].name, ingredients: arrDrinks[i].drinks[x].ingredients});
+						}
+					}
+				}
+				//get the random drink
+				return arrActiveDrinks[funRandomInteger(0,(arrActiveDrinks.length-1))];
+			}
+			
+			function funSuccess(){
+				//
+			}
+			
+			function funError(){
+				//
+			}
+			
+			function funRandomInteger(inc_min, inc_max){
+				return Math.floor(Math.random() * (inc_max - inc_min + 1)) + inc_min;
+			}
+			
+			function preventBehavior(e)
+			{
+				e.preventDefault();
+			};
+			
+			
+			
+			
+			
+			// Start watching the acceleration
+			//
+			function startWatch() {
+				
+				// Update acceleration every 3 seconds
+				var options = { frequency: 300 };
+				
+				watchID = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
+			}
+			
+			// Stop watching the acceleration
+			//
+			function stopWatch() {
+				if (watchID) {
+					navigator.accelerometer.clearWatch(watchID);
+					watchID = null;
+				}
+			}
+			
+			// onSuccess: Get a snapshot of the current acceleration
+			//
+			function onSuccess(acceleration) {
+				
+				var accelerationChange = {};
+				if (previousAcceleration.x !== null) {
+					accelerationChange.x = Math.abs(previousAcceleration.x, acceleration.x);
+					accelerationChange.y = Math.abs(previousAcceleration.y, acceleration.y);
+					accelerationChange.z = Math.abs(previousAcceleration.z, acceleration.z);
+				}
+				if (accelerationChange.x + accelerationChange.y + accelerationChange.z > strDeviceAccel) {
+					// Shake detected
+					funShakeDetected();
+				} else {
+					previousAcceleration = {
+						x: acceleration.x,
+						y: acceleration.y,
+						z: acceleration.z
+					}
+				}
+				
+				
+			}
+			
+			// onError: Failed to get the acceleration
+			//
+			function onError() {
+				alert('Sorry, the accelerometer for your ' + strDeviceName + ' seems to be reporting an error.');
+			}
+			
+			
+
+			function funStart(){
+				funDevicePrep();
+				document.getElementById("div_play_tabnavigation_settings").addEventListener("touchstart",funSettingsLaunch, false);
+				document.getElementById("div_settings_tabnavigation_play").addEventListener("touchstart",funPlayLaunch, false);
+				document.getElementById("div_play_spinner_bg").addEventListener("webkitAnimationEnd", funSpinDone, false);
+				funPlayLaunch();
+			}
+			
+			function funDevicePrep(){
+				if(document.height == 1024){
+					strDevice = "ipad";
+					strDeviceName = "iPad";
+					strDeviceAccel = 22;
+				}else if(document.height == 568){
+					strDevice = "iphone5";
+					strDeviceName = "iPhone";
+					strDeviceAccel = 30;
+				}else{
+					strDevice = "iphone";
+					strDeviceName = "iPhone";
+					strDeviceAccel = 30;
+				}
+				document.getElementById("body_all").className = "body_" + strDevice;
+			}
+			
+			function funPlayLaunch(){
+				document.getElementById("div_play").className = "div_play_active";
+				document.getElementById("div_settings").className = "div_settings_inactive";
+				document.getElementById("div_play_spinner_ingr").innerHTML = "";
+				document.getElementById("div_play_spinner_text").innerHTML = "Shake Your " + strDeviceName + " For A Random Drink";
+				startWatch();
+			}
+			
+			
+			
+			
+			function funShakeDetected(){
+				stopWatch();
+				previousAcceleration = {
+					x: null,
+					y: null,
+					z: null
+				}
+				document.getElementById("div_play_spinner_bg").className = "div_play_spinner_bg_active";
+				document.getElementById("div_play_spinner_text").innerHTML = "Searching...";
+				document.getElementById("div_play_spinner_ingr").innerHTML = "";
+			}
+			
+			function funSpinDone(){
+				var objNewDrink = funRandomDrink();
+				document.getElementById("div_play_spinner_text").innerHTML = objNewDrink.name;
+				document.getElementById("div_play_spinner_ingr").innerHTML = "Ingredients: " + objNewDrink.ingredients;
+				document.getElementById("div_play_spinner_bg").className = "div_play_spinner_bg_inactive";
+				startWatch();
+			}
+			
+			
+			function funSettingsLaunch(){
+				stopWatch();
+				document.getElementById("div_settings").className = "div_settings_active";
+				document.getElementById("div_play").className = "div_play_inactive";
+				document.getElementById("div_settings_categories").innerHTML = "";
+				for (var i=0;i<arrDrinks.length;i++){
+					var elmCatDiv = document.createElement("div");
+					elmCatDiv.addEventListener("touchend", funSettingsCategoryTapped, false);
+					elmCatDiv.innerHTML = arrDrinks[i].category;
+					if(arrDrinks[i].active == 1){
+						elmCatDiv.className = "div_settings_category_active";
+					}else{
+						elmCatDiv.className = "div_settings_category_inactive";
+					}
+					document.getElementById("div_settings_categories").appendChild(elmCatDiv);
+				}
+			}
+			
+			function funSettingsCategoryTapped(e){
+				for (var i=0;i<arrDrinks.length;i++){
+					if(e.target.innerHTML == arrDrinks[i].category){
+						if(arrDrinks[i].active == 0){
+							arrDrinks[i].active = 1;
+							e.target.className = "div_settings_category_active";
+						}else{
+							arrDrinks[i].active = 0;
+							e.target.className = "div_settings_category_inactive";
+						}
+						if(document.getElementsByClassName("div_settings_category_active").length == 0){
+							navigator.notification.alert(
+														 'You must use at least one category.',  // message
+														 funSuccess,         // callback
+														 'Sorry',            // title
+														 'Ok'                  // buttonName
+														 );
+							funSettingsCategoryTapped(e);
+						}
+					}
+				}
+			}
+			
+			
+		</script>
+		<style>
+			body, div, img{
+				margin: 0px;
+				padding: 0px;
+			}
+			body {
+				width: 100%;
+				-webkit-background-size: cover;
+				background-size: cover;
+			}
+			.div_play_active{
+				position: absolute;
+				top: 0px;
+				left: 0px;
+			}
+			.div_play_inactive{
+				position: absolute;
+				top: -10000px;
+				left: -10000px;
+			}
+			.div_settings_active{
+				position: absolute;
+				top: 0px;
+				left: 0px;
+			}
+			.div_settings_inactive{
+				position: absolute;
+				top: -10000px;
+				left: -10000px;
+			}
+			#div_play_spinner_bg{
+				position: absolute;
+				background: url('img/spinner_bg.png');
+				background-size: 100%;
+				-webkit-animation-duration: 2s;
+				-webkit-animation-timing-function: linear;
+				-webkit-animation-iteration-count: 1;
+			}
+			.div_play_spinner_bg_active {
+				-webkit-animation-name: anmSpinner;
+			}
+			.div_play_spinner_bg_inactive {
+				-webkit-animation-name: none;
+			}
+			@-webkit-keyframes anmSpinner
+            {
+                0% {
+					-webkit-transform: scale(1.0) rotate(0deg);
+                }
+                25% {
+                    -webkit-transform: scale(1.1) rotate(90deg);
+                }
+                50% {
+                    -webkit-transform: scale(1.2) rotate(180deg);
+                }
+                75% {
+                    -webkit-transform: scale(1.1) rotate(270deg);
+                }
+                100% {
+					-webkit-transform: scale(1.0) rotate(0deg);
+                }
+            }
+			#div_play_tabnavigation, #div_settings_tabnavigation{
+				background-size: 100%;
+				position:absolute;
+			}
+			#div_play_tabnavigation_settings, #div_settings_tabnavigation_play{
+				position:absolute;
+				top: 0px;
+			}
+			#div_play_spinner_textcont {
+				position: absolute;
+				display: table;
+			}
+			#div_play_spinner_text {
+				color: #000;
+				display: table-cell;
+				vertical-align: middle;
+				text-align: center;
+			}
+			#div_play_spinner_ingrcont {
+				position: absolute;
+				display: table;
+			}
+			#div_play_spinner_ingr {
+				font-family: Verdana;
+				color: #000;
+				display: table-cell;
+				vertical-align: top;
+				text-align: center;
+			}
+			#div_settings_text{
+				color: #000;
+				position: absolute;
+				background: #FFF;
+			}
+			#div_settings_categories{
+				position: absolute;
+			}
+			#div_settings_categories div{
+				color: #000;
+				position: relative;
+				text-align: center;
+			}
+			.div_settings_category_active{
+				background: #ffffff;
+			}
+			.div_settings_category_inactive{
+				background: #f5444e;
+			}
+			/***************************************
+			 BEGIN IPAD SPECIFIC
+			 ****************************************/
+			.body_ipad {
+				background: url('img/background.jpg') no-repeat center center fixed;
+				width: 768px;
+				height: 1004px;
+			}
+			.body_ipad #div_play_spinner_bg{
+				left: 184px;
+				top: 360px;
+				width: 400px;
+				height: 400px;
+			}
+			.body_ipad #div_play_tabnavigation, .body_ipad #div_settings_tabnavigation{
+				top: 955px;
+				left: 0px;
+				width: 768px;
+				height: 49px;
+			}
+			.body_ipad #div_play_tabnavigation{
+				background: url('img/ipad_play.png');
+			}
+			.body_ipad #div_settings_tabnavigation{
+				background: url('img/ipad_settings.png');
+			}
+			.body_ipad #div_play_tabnavigation_settings, .body_ipad #div_settings_tabnavigation_play{
+				width: 75px;
+				height: 49px;
+			}
+			.body_ipad #div_play_tabnavigation_settings{
+				left: 400px;
+			}
+			.body_ipad #div_settings_tabnavigation_play{
+				left: 290px;
+			}
+			.body_ipad #div_play_spinner_textcont {
+				left: 254px;
+				top: 460px;
+				width: 260px;
+				height: 190px;
+			}
+			.body_ipad #div_play_spinner_text {
+				font-family: MarkerFelt-Wide;
+				font-size: 40px;
+				width: 260px;
+			}
+			.body_ipad #div_play_spinner_ingrcont {
+				left: 274px;
+				top: 620px;
+				width: 220px;
+				height: 60px;
+			}
+			.body_ipad #div_play_spinner_ingr {
+				font-size: 14px;
+				width: 220px;
+			}
+			.body_ipad #div_settings_text{
+				font-family: MarkerFelt-Wide;
+				font-size:20px;
+				width: 600px;
+				padding: 20px;
+				left: 62px;
+				top: 134px;
+				border-radius: 10px;
+				border: 3px solid black;
+			}
+			.body_ipad #div_settings_categories{
+				left: 148px;
+				top: 270px;
+				width: 500px;
+				height: 600px;
+			}
+			.body_ipad #div_settings_categories div{
+				font-family: MarkerFelt-Wide;
+				font-size:24px;
+				width: 200px;
+				padding: 6px;
+				margin: 10px;
+				border-radius: 10px;
+				border: 3px solid black;
+				float: left;
+			}
+			/***************************************
+			 END IPAD SPECIFIC
+			 ****************************************/
+			
+			/***************************************
+			 BEGIN IPHONE SPECIFIC
+			 ****************************************/
+						.body_iphone {
+							background: url('img/background_iphone.jpg') no-repeat center center fixed;
+							width: 320px;
+							height: 460px;
+						}
+						.body_iphone #div_play_spinner_bg{
+							left: 30px;
+							top: 100px;
+							width: 260px;
+							height: 260px;
+						}
+						.body_iphone #div_play_tabnavigation, .body_iphone #div_settings_tabnavigation{
+							top: 411px;
+							left: 0px;
+							width: 320px;
+							height: 49px;
+						}
+						.body_iphone #div_play_tabnavigation{
+							background: url('img/iphone_play.png');
+						}
+						.body_iphone #div_settings_tabnavigation{
+							background: url('img/iphone_settings.png');
+						}
+						.body_iphone #div_play_tabnavigation_settings, .body_iphone #div_settings_tabnavigation_play{
+							width: 160px;
+							height: 49px;
+						}
+						.body_iphone #div_play_tabnavigation_settings{
+							left: 160px;
+						}
+						.body_iphone #div_settings_tabnavigation_play{
+							left: 0px;
+						}
+						.body_iphone #div_play_spinner_textcont {
+							left: 65px;
+							top: 180px;
+							width: 190px;
+							height: 95px;
+						}
+						.body_iphone #div_play_spinner_text {
+							font-family: MarkerFelt-Thin;
+							font-size: 28px;
+							width: 120px;
+						}
+						.body_iphone #div_play_spinner_ingrcont {
+							left: 85px;
+							top: 260px;
+							width: 150px;
+							height: 40px;
+						}
+						.body_iphone #div_play_spinner_ingr {
+							font-size: 10px;
+							width: 150px;
+						}
+						.body_iphone #div_settings_text{
+							font-family: MarkerFelt-Thin;
+							font-size:16px;
+							width: 260px;
+							padding: 8px;
+							left: 20px;
+							top: 50px;
+							border-radius: 4px;
+							border: 3px solid black;
+						}
+						.body_iphone #div_settings_categories{
+							left: 65px;
+							top: 147px;
+							width: 250px;
+						}
+						.body_iphone #div_settings_categories div{
+							font-family: MarkerFelt-Thin;
+							font-size:16px;
+							width: 80px;
+							padding: 3px;
+							margin: 3px;
+							border-radius: 6px;
+							border: 3px solid black;
+							float: left;
+						}
+			/***************************************
+			 END IPHONE SPECIFIC
+			 ****************************************/
+			/***************************************
+			 BEGIN IPHONE5 SPECIFIC
+			 ****************************************/
+			.body_iphone5 {
+				background: url('img/background_iphone5.jpg') no-repeat center center fixed;
+				width: 320px;
+				height: 504px;
+			}
+			.body_iphone5 #div_play_spinner_bg{
+				left: 30px;
+				top: 136px;
+				width: 260px;
+				height: 260px;
+			}
+			.body_iphone5 #div_play_tabnavigation, .body_iphone5 #div_settings_tabnavigation{
+				top: 499px;
+				left: 0px;
+				width: 320px;
+				height: 49px;
+			}
+			.body_iphone5 #div_play_tabnavigation{
+				background: url('img/iphone_play.png');
+			}
+			.body_iphone5 #div_settings_tabnavigation{
+				background: url('img/iphone_settings.png');
+			}
+			.body_iphone5 #div_play_tabnavigation_settings, .body_iphone5 #div_settings_tabnavigation_play{
+				width: 160px;
+				height: 49px;
+			}
+			.body_iphone5 #div_play_tabnavigation_settings{
+				left: 160px;
+			}
+			.body_iphone5 #div_settings_tabnavigation_play{
+				left: 0px;
+			}
+			.body_iphone5 #div_play_spinner_textcont {
+				left: 65px;
+				top: 216px;
+				width: 190px;
+				height: 95px;
+			}
+			.body_iphone5 #div_play_spinner_text {
+				font-family: MarkerFelt-Thin;
+				font-size: 28px;
+				width: 120px;
+			}
+			.body_iphone5 #div_play_spinner_ingrcont {
+				left: 85px;
+				top: 296px;
+				width: 150px;
+				height: 40px;
+			}
+			.body_iphone5 #div_play_spinner_ingr {
+				font-size: 10px;
+				width: 150px;
+			}
+			.body_iphone5 #div_settings_text{
+				font-family: MarkerFelt-Thin;
+				font-size:16px;
+				width: 260px;
+				padding: 8px;
+				left: 20px;
+				top: 90px;
+				border-radius: 4px;
+				border: 3px solid black;
+			}
+			.body_iphone5 #div_settings_categories{
+				left: 65px;
+				top: 187px;
+				width: 250px;
+			}
+			.body_iphone5 #div_settings_categories div{
+				font-family: MarkerFelt-Thin;
+				font-size:16px;
+				width: 80px;
+				padding: 3px;
+				margin: 3px;
+				border-radius: 6px;
+				border: 3px solid black;
+				float: left;
+			}
+			/***************************************
+			 END IPHONE5 SPECIFIC
+			 ****************************************/
+			
+		</style>
+    </head>
+    <body id="body_all">
+		<div id="div_play" class="div_play_inactive">
+			<div id="div_play_spinner_bg" class="div_play_spinner_bg_inactive"></div>
+			<div id="div_play_spinner_textcont">
+				<div id="div_play_spinner_text"></div>
+			</div>
+			<div id="div_play_spinner_ingrcont">
+				<div id="div_play_spinner_ingr"></div>
+			</div>
+			<div id="div_play_tabnavigation">
+				<div id="div_play_tabnavigation_settings"></div>
+			</div>
+		</div>
+		<div id="div_settings" class="div_settings_inactive">
+			<div id="div_settings_text">
+				Tap a category to add or remove that type of drink from your random drink options. Red categories will not be used in the selection of your random drinks.
+			</div>
+			<div id="div_settings_categories"></div>
+			<div id="div_settings_tabnavigation">
+				<div id="div_settings_tabnavigation_play"></div>
+			</div>
+		</div>
+        <script type="text/javascript" src="cordova-2.2.0rc1.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript">
+            app.initialize();
+		</script>
+    </body>
+</html>
